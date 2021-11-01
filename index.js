@@ -9,13 +9,21 @@ passport.use(new GoogleStrategy({
     clientID: keys.googleClientID,
     clientSecret: keys.googleClientSecret,
     callbackURL: '/auth/google/callback'
-}, (accessToken) => {
-    console.log(accessToken);
+}, (accessToken, refreshToken, profile, done) => {
+    console.log('access token', accessToken);
+    console.log('refresh token', refreshToken);
+    console.log('profile', profile);
 }));
 
-app.get('/', (req, res) => {
-    res.send({ bye: 'buddy' });
-});
+app.get('/auth/google', passport.authenticate('google', {
+    scope: ['profile', 'email']
+}));
+
+app.get('/auth/google/callback', passport.authenticate('google'));
+
+// app.get('/', (req, res) => {
+//     res.send({ bye: 'buddy' });
+// });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, (req, res) => {
